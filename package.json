@@ -16,9 +16,24 @@
     "cli",
     "llm",
     "openai",
-    "anthropic"
+    "anthropic",
+    "ai",
+    "models",
+    "configuration"
   ],
+  "author": "Kartvya69",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kartvya69/BYOK-CLI.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Kartvya69/BYOK-CLI/issues"
+  },
+  "homepage": "https://github.com/Kartvya69/BYOK-CLI#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "commander": "^12.0.0",
     "inquirer": "^9.2.0",
