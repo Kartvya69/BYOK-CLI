@@ -32,7 +32,7 @@ A CLI tool to configure custom models for [Factory CLI](https://docs.factory.ai/
 
 First, install Factory CLI:
 ```bash
-npm install -g @anthropic-ai/factory
+curl -fsSL https://app.factory.ai/cli | sh
 ```
 
 Then install BYOK CLI:
