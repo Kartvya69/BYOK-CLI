@@ -132,6 +132,12 @@ async function addModel() {
               message: 'Select API compatibility:',
               choices: PROVIDER_TYPES
             });
+            prompts.push({
+              type: 'input',
+              name: 'customProviderName',
+              message: 'Enter a name for this provider:',
+              default: 'Custom Provider'
+            });
           }
           
           const customAnswers = await inquirer.prompt(prompts);
@@ -141,6 +147,9 @@ async function addModel() {
           baseUrl = customAnswers.baseUrl;
           if (customAnswers.providerType) {
             providerType = customAnswers.providerType;
+          }
+          if (customAnswers.customProviderName) {
+            providerName = customAnswers.customProviderName;
           }
         }
 
@@ -204,12 +213,27 @@ async function addModel() {
         } else {
           console.log('\n📡 Fetching available models...\n');
           try {
-            let models = await fetchModels(baseUrl, apiKey, provider.modelsEndpoint, provider.noAuth, providerType);
+            let models = [];
+            
+            // Try primary fetch
+            try {
+              models = await fetchModels(baseUrl, apiKey, provider.modelsEndpoint, provider.noAuth, providerType);
+            } catch (primaryError) {
+              console.log(`Primary fetch failed: ${primaryError.message}`);
+            }
             
             // If no models found and using anthropic type, try generic-chat-completion-api
             if (models.length === 0 && providerType === 'anthropic') {
               console.log('Trying OpenAI-compatible endpoint...\n');
-              models = await fetchModels(baseUrl, apiKey, provider.modelsEndpoint, provider.noAuth, 'generic-chat-completion-api');
+              try {
+                models = await fetchModels(baseUrl, apiKey, provider.modelsEndpoint, provider.noAuth, 'generic-chat-completion-api');
+                if (models.length > 0) {
+                  // Update providerType since generic works
+                  providerType = 'generic-chat-completion-api';
+                }
+              } catch (e) {
+                // Ignore fallback errors
+              }
             }
             
             // If still no models and using generic type, try without /v1
@@ -544,13 +568,19 @@ async function addModel() {
       }
     }
 
+    // Normalize baseUrl for saving - add /v1 for OpenAI-compatible if missing
+    let normalizedBaseUrl = baseUrl.replace(/\/$/, '');
+    if ((providerType === 'generic-chat-completion-api' || providerType === 'openai') && !normalizedBaseUrl.endsWith('/v1')) {
+      normalizedBaseUrl = `${normalizedBaseUrl}/v1`;
+    }
+
     const modelConfigs = selectedModels.map(modelId => {
       const normalizedName = normalizeModelName(modelId);
       const displayName = `${normalizedName} [${displayTitle}]`;
       return generateModelConfig({
         model: modelId,
         displayName,
-        baseUrl,
+        baseUrl: normalizedBaseUrl,
         apiKey,
         provider: providerType,
         maxOutputTokens,
@@ -609,7 +639,7 @@ async function addModel() {
 
           await saveProvider({
             name: providerSaveName,
-            baseUrl,
+            baseUrl: normalizedBaseUrl,
             providerType,
             apiKey,
             modelsEndpoint: provider.modelsEndpoint || '/models',
