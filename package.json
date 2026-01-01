@@ -1,6 +1,6 @@
 {
   "name": "byok-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI tool to configure custom models for Factory CLI BYOK",
   "main": "src/index.js",
   "type": "module",
