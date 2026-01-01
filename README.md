@@ -31,24 +31,22 @@ A CLI tool to configure custom models for [Factory CLI](https://docs.factory.ai/
 ## Installation
 
 ```bash
-git clone https://github.com/Kartvya69/BYOK-CLI.git
-cd BYOK-CLI
-npm install
+npm install -g byok-cli
 ```
 
 ## Usage
 
 ```bash
-npm start
-# or
-node src/index.js
+byok-cli
 ```
 
-### Global Installation
+### From Source
 
 ```bash
-npm link
-byok-cli
+git clone https://github.com/Kartvya69/BYOK-CLI.git
+cd BYOK-CLI
+npm install
+npm start
 ```
 
 ## Supported Providers
