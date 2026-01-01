@@ -1,0 +1,27 @@
+{
+  "name": "byok-cli",
+  "version": "1.0.0",
+  "description": "CLI tool to configure custom models for Factory CLI BYOK",
+  "main": "src/index.js",
+  "type": "module",
+  "bin": {
+    "byok-cli": "./src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "factory",
+    "byok",
+    "cli",
+    "llm",
+    "openai",
+    "anthropic"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.0.0",
+    "inquirer": "^9.2.0",
+    "inquirer-autocomplete-prompt": "^3.0.1"
+  }
+}
