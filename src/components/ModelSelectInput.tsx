@@ -12,11 +12,14 @@ interface ModelSelectInputProps {
   onSubmit: (selectedValues: string[]) => void;
 }
 
+const VISIBLE_COUNT = 10;
+
 export function ModelSelectInput({ options, onSubmit }: ModelSelectInputProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedValues, setSelectedValues] = useState<Set<string>>(new Set());
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [isSearchFocused, setIsSearchFocused] = useState(true);
+  const [viewportStart, setViewportStart] = useState(0);
 
   // Filter models based on search query
   const filteredOptions = useMemo(() => {
@@ -27,6 +30,12 @@ export function ModelSelectInput({ options, onSubmit }: ModelSelectInputProps) {
       opt.label.toLowerCase().includes(query)
     );
   }, [options, searchQuery]);
+
+  // Reset viewport and focus when search changes
+  useMemo(() => {
+    setFocusedIndex(0);
+    setViewportStart(0);
+  }, [searchQuery]);
 
   // Get visible option values for "select all visible" functionality
   const visibleValues = useMemo(() =>
@@ -66,6 +75,8 @@ export function ModelSelectInput({ options, onSubmit }: ModelSelectInputProps) {
         // Ctrl+K: Clear search
         setSearchQuery('');
         setIsSearchFocused(true);
+        setFocusedIndex(0);
+        setViewportStart(0);
         return;
       }
     }
@@ -100,12 +111,22 @@ export function ModelSelectInput({ options, onSubmit }: ModelSelectInputProps) {
         // At top, go back to search
         setIsSearchFocused(true);
       } else {
-        setFocusedIndex(prev => prev - 1);
+        const newIndex = focusedIndex - 1;
+        setFocusedIndex(newIndex);
+        // Scroll viewport up if needed
+        if (newIndex < viewportStart) {
+          setViewportStart(newIndex);
+        }
       }
       return;
     }
     if (key.downArrow) {
-      setFocusedIndex(prev => Math.min(filteredOptions.length - 1, prev + 1));
+      const newIndex = Math.min(filteredOptions.length - 1, focusedIndex + 1);
+      setFocusedIndex(newIndex);
+      // Scroll viewport down if needed
+      if (newIndex >= viewportStart + VISIBLE_COUNT) {
+        setViewportStart(newIndex - VISIBLE_COUNT + 1);
+      }
       return;
     }
     if (key.tab) {
@@ -174,13 +195,14 @@ export function ModelSelectInput({ options, onSubmit }: ModelSelectInputProps) {
       </Box>
 
       {/* Model List */}
-      <Box flexDirection="column" height={Math.min(10, filteredOptions.length)}>
+      <Box flexDirection="column" height={Math.min(VISIBLE_COUNT, filteredOptions.length)}>
         {filteredOptions.length === 0 ? (
           <Text color={colors.dimGray}>No models match your search</Text>
         ) : (
-          filteredOptions.slice(0, 10).map((option, index) => {
+          filteredOptions.slice(viewportStart, viewportStart + VISIBLE_COUNT).map((option, index) => {
+            const actualIndex = viewportStart + index;
             const isSelected = selectedValues.has(option.value);
-            const isFocused = !isSearchFocused && index === focusedIndex;
+            const isFocused = !isSearchFocused && actualIndex === focusedIndex;
 
             return (
               <Box
@@ -206,9 +228,9 @@ export function ModelSelectInput({ options, onSubmit }: ModelSelectInputProps) {
       </Box>
 
       {/* Scroll indicator */}
-      {filteredOptions.length > 10 && (
+      {filteredOptions.length > VISIBLE_COUNT && (
         <Text color={colors.dimGray} dimColor>
-          ... and {filteredOptions.length - 10} more (scroll with ↑↓)
+          Showing {viewportStart + 1}-{Math.min(viewportStart + VISIBLE_COUNT, filteredOptions.length)} of {filteredOptions.length} (scroll with ↑↓)
         </Text>
       )}
 

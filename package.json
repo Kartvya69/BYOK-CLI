@@ -1,6 +1,6 @@
 {
   "name": "byok-cli",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "CLI tool to configure custom models for Factory CLI BYOK",
   "main": "src/app.tsx",
   "type": "module",
