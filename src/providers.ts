@@ -1,4 +1,13 @@
-export const PROVIDERS = {
+export interface ProviderConfig {
+  name: string;
+  baseUrl: string | null;
+  type: string;
+  modelsEndpoint: string | null;
+  requiresBaseUrl?: boolean;
+  noAuth?: boolean;
+}
+
+export const PROVIDERS: Record<string, ProviderConfig> = {
   'openai-compatible': {
     name: 'OpenAI Compatible (Custom URL)',
     baseUrl: null,
@@ -77,7 +86,7 @@ export const PROVIDERS = {
   custom: {
     name: 'Custom Provider',
     baseUrl: null,
-    type: null,
+    type: 'generic-chat-completion-api',
     modelsEndpoint: '/models'
   }
 };
@@ -88,7 +97,7 @@ export const PROVIDER_TYPES = [
   { value: 'anthropic', name: 'Anthropic (Messages API)' }
 ];
 
-export function getProviderChoices() {
+export function getProviderChoices(): { name: string; value: string }[] {
   return Object.entries(PROVIDERS).map(([key, provider]) => ({
     name: provider.name,
     value: key

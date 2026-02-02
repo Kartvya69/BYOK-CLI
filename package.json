@@ -1,14 +1,15 @@
 {
   "name": "byok-cli",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "CLI tool to configure custom models for Factory CLI BYOK",
-  "main": "src/index.js",
+  "main": "src/app.tsx",
   "type": "module",
   "bin": {
-    "byok-cli": "./src/index.js"
+    "byok-cli": "./bin/byok-cli"
   },
   "scripts": {
-    "start": "node src/index.js"
+    "start": "tsx src/app.tsx",
+    "build": "tsc"
   },
   "keywords": [
     "factory",
@@ -35,8 +36,22 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@inkjs/ui": "^2.0.0",
+    "@types/react": "^19.2.10",
     "commander": "^12.0.0",
+    "ink": "^6.6.0",
+    "ink-stepper": "^0.2.1",
     "inquirer": "^9.2.0",
-    "inquirer-autocomplete-prompt": "^3.0.1"
+    "inquirer-autocomplete-prompt": "^3.0.1",
+    "keytar": "^7.9.0",
+    "proper-lockfile": "^4.1.2",
+    "react": "^19.2.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.1.0",
+    "@types/proper-lockfile": "^4.1.4"
   }
 }

@@ -15,18 +15,19 @@
   ╚═══════════════════════════════════════════════════════════════╝
 ```
 
-A CLI tool to configure custom models for [Factory CLI](https://docs.factory.ai/cli/byok/) BYOK (Bring Your Own Key).
+A beautiful interactive CLI tool to configure custom models for [Factory CLI](https://docs.factory.ai/cli/byok/) BYOK (Bring Your Own Key).
 
 ## Features
 
 - **13+ Built-in Providers** - OpenRouter, DeepInfra, Fireworks, Groq, Ollama, Google Gemini, Hugging Face, Baseten, Anthropic, OpenAI, and more
 - **OpenAI & Anthropic Compatible** - Add any OpenAI-compatible or Anthropic-compatible API endpoint
-- **Live Model Search** - Type to filter models, select all matching with one click
-- **Multi-select Models** - Add multiple models at once with checkbox or search selection
-- **Smart Name Normalization** - Converts `claude-sonnet-4-5-20250929` → `Claude Sonnet 4.5`
-- **Provider Saving** - Save providers with API keys for future use
-- **Advanced Settings** - Configure temperature, top_p, top_k, penalties, custom headers
-- **Go Back Navigation** - Navigate back at any step
+- **Saved Providers** - Save and manage providers with API keys for quick access
+- **Live Model Search** - Type to filter models with real-time search
+- **Multi-select Models** - Add multiple models at once with Ctrl+A to select all
+- **Smart Name Detection** - Fetches display names from [models.dev](https://models.dev) API
+- **URL Validation** - Ensures OpenAI-compatible URLs end with `/v1`
+- **Step-by-Step Wizard** - Beautiful pink-themed UI with progress indicator
+- **Go Back Navigation** - Press ESC to navigate back at any step
 
 ## Installation
 
@@ -55,11 +56,25 @@ npm install
 npm start
 ```
 
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `Enter` | Continue to next step |
+| `ESC` | Go back to previous step |
+| `Space` | Toggle model selection |
+| `Ctrl+A` | Select all visible models |
+| `Ctrl+D` | Deselect all models |
+| `Ctrl+K` | Clear search |
+| `↑↓` | Navigate list |
+| `←→` | Select Yes/No in confirmation |
+| `J` | Toggle JSON config preview |
+
 ## Supported Providers
 
 | Provider | Type | Base URL |
 |----------|------|----------|
-| OpenAI Compatible | `generic-chat-completion-api` | Custom URL |
+| OpenAI Compatible | `generic-chat-completion-api` | Custom URL (must end with `/v1`) |
 | Anthropic Compatible | `anthropic` | Custom URL |
 | OpenRouter | `generic-chat-completion-api` | `https://openrouter.ai/api/v1` |
 | DeepInfra | `generic-chat-completion-api` | `https://api.deepinfra.com/v1/openai` |
@@ -72,62 +87,72 @@ npm start
 | Anthropic | `anthropic` | `https://api.anthropic.com` |
 | OpenAI | `openai` | `https://api.openai.com/v1` |
 
-## Model Name Normalization
-
-The CLI automatically normalizes model names for better readability:
-
-| Original | Normalized |
-|----------|------------|
-| `claude-sonnet-4-5-20250929` | `Claude Sonnet 4.5` |
-| `anthropic/claude-3-opus` | `Claude 3 Opus` |
-| `gpt-4-turbo-2024-04-09` | `GPT 4 Turbo` |
-| `meta-llama/llama-3-70b-instruct` | `LLaMA 3 70B Instruct` |
-| `qwen2.5-coder:32b` | `Qwen 2.5 Coder 32B` |
-| `deepseek-r1-distill-llama-70b` | `DeepSeek R1 Distill LLaMA 70B` |
-| `Mixtral-8x7B-v0.1` | `Mixtral 8x7B V0.1` |
-
 ## Storage Locations
 
 | File | Purpose |
 |------|---------|
 | `~/.factory/settings.json` | Factory CLI settings (models for Droid) |
-| `~/.factory/byok-providers.json` | Saved providers with API keys |
-| `~/.factory/byok-models.json` | Local backup of all added models |
+| `~/.byok-cli/providers.json` | Saved providers with API keys |
+| `~/.byok-cli/models.json` | Tracked models with full configuration |
 
-## Example Flow
+## Screenshots
 
+### Provider Selection
+Saved providers appear at the top with a heart icon for quick access:
 ```
-? Select a provider: OpenRouter
-? Enter your API key: ********
-? How would you like to select models? Fetch available models from API
-? How would you like to select models? Search and select (type to filter)
+💖 Xreatlabs (saved)
+───────────────
+⭐ OpenAI Compatible (Custom URL)
+⭐ Anthropic Compatible (Custom URL)
+⭐ OpenRouter
+...
+```
 
-? Search model (0 selected) - type to filter: claude
-  ← Go Back
-> ★ Select all "claude" matches (5)
-  anthropic/claude-3-opus (anthropic)
-  anthropic/claude-3-sonnet (anthropic)
-  ...
+### Model Selection
+Search and multi-select models with keyboard shortcuts:
+```
+🔍 Type to search models...
+3 of 150 selected (showing 10 of 150)
 
-✓ Added 5 models matching "claude":
-  - anthropic/claude-3-opus
-  - anthropic/claude-3-sonnet
-  ...
-
-? Max output tokens: 16384
-? Do these models support image inputs? No
-? Configure advanced settings? No
-
-📋 Generated 5 configuration(s):
-1. Claude 3 Opus [OpenRouter]
-2. Claude 3 Sonnet [OpenRouter]
+☑️ Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
+☑️ GPT-4 Turbo (gpt-4-turbo)
+☐ Gemini Pro (gemini-pro)
 ...
 
-? Add 5 model(s) to ~/.factory/settings.json? Yes
-
-✅ 5 model configuration(s) saved
-📦 Models also saved locally
+Space: toggle • Ctrl+A: select all • Ctrl+D: deselect
 ```
+
+### Configuration Summary
+Review before saving with JSON preview option:
+```
+📋 Configuration Summary:
+╭─────────────────────────────────────────╮
+│ 🏢 Provider: Xreatlabs                  │
+│ 🔗 Base URL: https://api.xreatlabs.space/v1 │
+│ 🤖 Models: Claude Sonnet 4.5, GPT-4     │
+│ ⚙️ Max Tokens: 16384                    │
+│ ⚙️ Images: Yes                          │
+╰─────────────────────────────────────────╯
+```
+
+## Changelog
+
+### v2.0.0
+- **New:** Saved providers now appear in dropdown for quick selection
+- **New:** URL validation requires `/v1` suffix for OpenAI-compatible APIs
+- **New:** Navigation hints with arrow indicators
+- **New:** Manual model entry now fetches display names from models.dev
+- **Fixed:** Models now properly save to `~/.byok-cli/models.json`
+- **Fixed:** Settings.json no longer gets reset on first run
+- **Fixed:** Navigation after confirmation now works correctly
+- **Fixed:** Race conditions in state management
+- **Improved:** All state updates use functional patterns for reliability
+
+### v1.0.1
+- Bug fixes for model fetching and URL normalization
+
+### v1.0.0
+- Initial release
 
 ## License
 
