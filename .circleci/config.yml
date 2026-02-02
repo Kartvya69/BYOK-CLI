@@ -1,0 +1,29 @@
+version: 2.1
+
+jobs:
+  publish:
+    docker:
+      - image: cimg/node:20.0
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm ci
+      - run:
+          name: Build
+          command: npm run build
+      - run:
+          name: Publish to npm
+          command: |
+            echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+            npm publish --access public
+
+workflows:
+  publish-on-tag:
+    jobs:
+      - publish:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
